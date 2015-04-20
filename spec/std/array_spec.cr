@@ -897,4 +897,12 @@ describe "Array" do
     ary2 = ary.map_with_index { |e, i| e + i }
     ary2.should eq([1, 2, 4, 5])
   end
+
+  it "does not recursively match itself in push(*values)" do
+    assert_error %(
+      a = [1]
+      a.push("a")
+      ),
+      "no overload matches 'Array(Int32)#<<' with types String"
+  end
 end
