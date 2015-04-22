@@ -209,8 +209,13 @@ class Array(T)
   def +(other : Array(U))
     new_length = length + other.length
     Array(T | U).build(new_length) do |buffer|
-      buffer.copy_from(self.buffer, length)
-      (buffer + length).copy_from(other.buffer, other.length)
+      if self.is_a?(Array(U))
+        buffer.copy_from(self.buffer, length)
+        (buffer + length).copy_from(other.buffer, other.length)
+      else
+        each_with_index { |obj, i| buffer[i] = obj }
+        other.each_with_index { |obj, i| buffer[length + i] = obj }
+      end
       new_length
     end
   end

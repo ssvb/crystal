@@ -47,6 +47,14 @@ describe "Array" do
     0.upto(4) { |i| c[i].should eq(i + 1) }
   end
 
+  it "does + for mixed element types" do
+    a = ['1'] of Char
+    b = [2] of Int32
+    c = a + b
+    c[0].is_a?(Char).should be_true
+    c[1].is_a?(Int32).should be_true
+  end
+
   it "does -" do
     ([1, 2, 3, 4, 5] - [4, 2]).should eq([1, 3, 5])
   end
