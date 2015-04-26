@@ -25,6 +25,7 @@ module Crystal
     end
 
     def next_token
+      @prev_token_type = @token.type unless @token.type == :SPACE
       reset_token
 
       start = current_pos
@@ -43,6 +44,13 @@ module Crystal
           next_char_no_column_increment
           consume_loc_pragma
           start = current_pos
+        elsif (@prev_token_type == :"[]" || @prev_token_type == :"]") &&
+          (char == 'o' && next_char_no_column_increment == 'f' && peek_next_char.whitespace?)
+          next_char_no_column_increment
+          @column_number += 3
+          @token.type = :IDENT
+          @token.value = :of
+          return @token
         else
           if @doc_enabled
             consume_doc
