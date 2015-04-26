@@ -184,8 +184,10 @@ module Crystal
           when :unless
             atomic = parse_expression_suffix(location) { |exp| Unless.new(exp, atomic) }
           when :while
+            raise "single line 'while' syntax is not supported" if !atomic.begin_block?
             atomic = parse_expression_suffix(location) { |exp| While.new(exp, atomic, true) }
           when :until
+            raise "single line 'until' syntax is not supported" if !atomic.begin_block?
             atomic = parse_expression_suffix(location) { |exp| Until.new(exp, atomic, true) }
           when :rescue
             next_token_skip_space
@@ -1029,7 +1031,9 @@ module Crystal
       slash_is_regex!
       next_token_skip_statement_end
       exps = parse_expressions
-      parse_exception_handler exps
+      exps = parse_exception_handler exps
+      exps.mark_as_begin_block
+      exps
     end
 
     def parse_exception_handler(exp)

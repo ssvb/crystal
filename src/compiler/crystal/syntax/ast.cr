@@ -46,6 +46,14 @@ module Crystal
       false
     end
 
+    def begin_block?
+      @begin_block_flag
+    end
+
+    def mark_as_begin_block
+      @begin_block_flag = true
+    end
+
     def true_literal?
       false
     end

@@ -482,19 +482,19 @@ describe "Parser" do
 
   it_parses "1 if 3", If.new(3.int32, 1.int32)
   it_parses "1 unless 3", Unless.new(3.int32, 1.int32)
-  it_parses "1 while 3", While.new(3.int32, 1.int32, run_once: true)
-  it_parses "1 until 3", Until.new(3.int32, 1.int32, run_once: true)
-  it_parses "r = 1; r.x += 2 while 3", [Assign.new("r".var, 1.int32), While.new(3.int32, Call.new("r".var, "x=", Call.new(Call.new("r".var, "x"), "+", 2.int32)), true)] of ASTNode
+  it_parses "begin 1 end while 3", While.new(3.int32, 1.int32, run_once: true)
+  it_parses "begin 1 end until 3", Until.new(3.int32, 1.int32, run_once: true)
+  it_parses "r = 1; r.x += 2 if 3", [Assign.new("r".var, 1.int32), If.new(3.int32, Call.new("r".var, "x=", Call.new(Call.new("r".var, "x"), "+", 2.int32)))] of ASTNode
 
   it_parses "foo if 3", If.new(3.int32, "foo".call)
   it_parses "foo unless 3", Unless.new(3.int32, "foo".call)
-  it_parses "foo while 3", While.new(3.int32, "foo".call, run_once: true)
-  it_parses "foo until 3", Until.new(3.int32, "foo".call, run_once: true)
+  it_parses "begin foo end while 3", While.new(3.int32, "foo".call, run_once: true)
+  it_parses "begin foo end until 3", Until.new(3.int32, "foo".call, run_once: true)
 
   it_parses "a = 1; a += 10 if a += 20", [Assign.new("a".var, 1.int32), If.new(Assign.new("a".var, Call.new("a".var, "+", 20.int32)), Assign.new("a".var, Call.new("a".var, "+", 10.int32)))]
   it_parses "puts a if true", If.new(true.bool, Call.new(nil, "puts", "a".call))
   it_parses "puts a unless true", Unless.new(true.bool, Call.new(nil, "puts", "a".call))
-  it_parses "puts a while true", While.new(true.bool, Call.new(nil, "puts", "a".call), run_once: true)
+  it_parses "begin puts a end while true", While.new(true.bool, Call.new(nil, "puts", "a".call), run_once: true)
   it_parses "puts ::foo", Call.new(nil, "puts", Call.new(nil, "foo", global: true))
 
   { {"break", Break}, {"return", Return}, {"next", Next} }.each do |tuple|
@@ -520,8 +520,10 @@ describe "Parser" do
     assert_syntax_error "until #{keyword}; end", "void value expression"
     assert_syntax_error "1 if #{keyword}", "void value expression"
     assert_syntax_error "1 unless #{keyword}", "void value expression"
-    assert_syntax_error "1 while #{keyword}", "void value expression"
-    assert_syntax_error "1 until #{keyword}", "void value expression"
+    assert_syntax_error "1 while #{keyword}", "syntax is not supported"
+    assert_syntax_error "1 until #{keyword}", "syntax is not supported"
+    assert_syntax_error "begin 1 end while #{keyword}", "void value expression"
+    assert_syntax_error "begin 1 end until #{keyword}", "void value expression"
     assert_syntax_error "#{keyword}.foo", "void value expression"
     assert_syntax_error "#{keyword} as Int32", "void value expression"
     assert_syntax_error "#{keyword}[]", "void value expression"
