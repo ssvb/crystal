@@ -4,7 +4,11 @@ module Random
   DEFAULT = MT19937.new
 
   def self.new_seed
-    Intrinsics.read_cycle_counter.to_u32
+    ifdef armv7l
+      Time.now.ticks.to_u32
+    else
+      Intrinsics.read_cycle_counter.to_u32
+    end
   end
 
   def self.new(seed = new_seed)

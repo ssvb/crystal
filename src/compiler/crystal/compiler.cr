@@ -10,6 +10,7 @@ module Crystal
   class Compiler
     DataLayout32 = "e-p:32:32:32-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:32:64-f32:32:32-f64:32:64-v64:64:64-v128:128:128-a0:0:64-f80:32:32-n8:16:32"
     DataLayout64 = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64"
+    DataLayout32_arm = "e-p:32:32:32-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:64:128-a:0:64-n32"
 
     CC = ENV["CC"]? || "cc"
 
@@ -168,6 +169,9 @@ module Crystal
 
       if program.has_flag?("x86_64")
         llvm_mod.data_layout = DataLayout64
+      elsif program.has_flag?("armv7l")
+        llvm_mod.data_layout = DataLayout32_arm
+        llvm_mod.target = "armv7l-none-linux-gnueabihf"
       else
         llvm_mod.data_layout = DataLayout32
       end
@@ -183,6 +187,7 @@ module Crystal
       target_machine.emit_obj_to_file llvm_mod, o_name
 
       puts "#{CC} #{o_name} -o #{output_filename} #{@link_flags} #{lib_flags}"
+      system "#{CC} #{o_name} -o #{output_filename} #{@link_flags} #{lib_flags}"
     end
 
     private def codegen(units, lib_flags, output_filename)
@@ -242,6 +247,8 @@ module Crystal
       unit.llvm_mod.target = target_triple
       ifdef x86_64
         unit.llvm_mod.data_layout = DataLayout64
+      elsif armv7l
+        unit.llvm_mod.data_layout = DataLayout32_arm
       else
         unit.llvm_mod.data_layout = DataLayout32
       end

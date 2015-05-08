@@ -26,6 +26,21 @@ elsif linux
       fun get_reg = _ULx86_64_get_reg(cursor : Cursor*, regnum : Int32, reg : LibC::SizeT*) : Int32
       fun get_proc_name = _ULx86_64_get_proc_name(cursor : Cursor*, name : UInt8*, size : Int32, offset : LibC::SizeT*) : Int32
     end
+  elsif armv7l
+    @[Link("unwind")]
+    lib Unwind
+      type Cursor = LibC::SizeT[4096] # UNW_TDEP_CURSOR_LEN = 4096
+      type Context = LibC::SizeT[186] # sizeof(ucontext_t)/4 = 186
+
+#      REG_IP = 14                     # UNW_REG_IP = 14
+      REG_IP = -1
+
+      fun get_context = getcontext(context : Context*) : Int32
+      fun init_local = _ULarm_init_local(cursor : Cursor*, context : Context*) : Int32
+      fun step = _ULarm_step(cursor : Cursor*) : Int32
+      fun get_reg = _ULarm_get_reg(cursor : Cursor*, regnum : Int32, reg : LibC::SizeT*) : Int32
+      fun get_proc_name = _ULarm_get_proc_name(cursor : Cursor*, name : UInt8*, size : Int32, offset : LibC::SizeT*) : Int32
+    end
   else
     @[Link("unwind")]
     lib Unwind

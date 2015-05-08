@@ -15,6 +15,18 @@ module LLVM
     LibLLVM.link_in_mc_jit
   end
 
+  def self.init_arm
+    return if @@initialized
+    @@initialized = true
+
+    LibLLVM.initialize_arm_target_info
+    LibLLVM.initialize_arm_target
+    LibLLVM.initialize_arm_target_mc
+    LibLLVM.initialize_arm_asm_printer
+    # LibLLVM.link_in_jit
+    LibLLVM.link_in_mc_jit
+  end
+
   def self.int(type, value)
     Value.new LibLLVM.const_int(type, value.to_u64, 0)
   end

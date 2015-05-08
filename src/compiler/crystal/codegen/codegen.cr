@@ -5,8 +5,6 @@ require "../semantic/type_inference"
 require "../program"
 require "./*"
 
-LLVM.init_x86
-
 module Crystal
   MAIN_NAME = "__crystal_main"
   RAISE_NAME = "__crystal_raise"

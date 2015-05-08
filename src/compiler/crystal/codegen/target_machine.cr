@@ -4,7 +4,14 @@ require "../program"
 module Crystal
   module TargetMachine
     def self.create(target_triple, cpu, release)
-      LLVM.init_x86
+      case target_triple
+      when /^(x86_64|i386|i686)/
+        LLVM.init_x86
+      when /^arm/
+        LLVM.init_arm
+      else
+        raise "Unsupported arch for target triple: #{target_triple}"
+      end
 
       opt_level = release ? LLVM::CodeGenOptLevel::Aggressive : LLVM::CodeGenOptLevel::None
 
