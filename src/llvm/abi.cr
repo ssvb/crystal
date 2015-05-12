@@ -1,13 +1,15 @@
 # Based on https://github.com/rust-lang/rust/blob/master/src/librustc_trans/trans/cabi.rs
 abstract class LLVM::ABI
   getter target_data
+  getter is_ios
   getter is_osx
   getter is_windows
 
   def initialize(target_machine : TargetMachine)
     @target_data = target_machine.data_layout
     triple = target_machine.triple
-    @is_osx = !!(triple =~ /apple/)
+    @is_ios = !!(tripe =~ /apple-ios/)
+    @is_osx = !!(triple =~ /apple-darwin/)
     @is_windows = !!(triple =~ /windows/)
   end
 
