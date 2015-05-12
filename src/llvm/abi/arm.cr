@@ -11,11 +11,19 @@ class LLVM::ABI::ARM < LLVM::ABI
   def align(type : Type)
     case type.kind
     when Type::Kind::Integer
-      (type.int_width + 7) / 8
+      if is_ios
+        Math.min(4, ((type.int_width + 7) / 8))
+      else
+        (type.int_width + 7) / 8
+      end
     when Type::Kind::Float
       4
     when Type::Kind::Double
-      8
+      if is_ios
+        4
+      else
+        8
+      end
     when Type::Kind::Pointer
       4
     when Type::Kind::Struct
